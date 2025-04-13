@@ -4,6 +4,10 @@
 <h2>Create a New Bracket</h2>
 
 <form id="bracketForm" method="POST" action="{{ url_for('web.create_bracket') }}">
+    <div>
+        <label for="bracket_name">Bracket Name:</label>
+        <input type="text" id="bracket_name" name="bracket_name" placeholder="Enter a name for your bracket" required>
+    </div>
     <div id="bracket">
         <!-- Eastern Conference -->
         <div class="conference">

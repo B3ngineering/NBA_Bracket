@@ -22,16 +22,27 @@ def view_brackets():
     brackets = current_user.brackets  # Assuming a relationship exists in the User model
     return render_template('view_brackets.html', brackets=brackets)
 
+@web.route('/view_bracket/<int:bracket_id>')
+@login_required
+def view_bracket(bracket_id):
+    # Fetch the bracket from the database
+    bracket = Bracket.query.filter_by(id=bracket_id, user_id=current_user.id).first_or_404()
+
+    # Pass the bracket data to the template
+    return render_template('view_bracket.html', bracket=bracket)
+
 @web.route('/create_bracket', methods=['GET', 'POST'])
 @login_required
 def create_bracket():
     if request.method == 'POST':
         # Extract bracket data from the form
+        bracket_name = request.form.get('bracket_name')
         bracket_data = request.form.to_dict()
 
+        bracket_data.pop('bracket_name', None)  # Remove the name from the data
         # Create a new bracket object
         new_bracket = Bracket(
-            name="User Bracket",
+            name=bracket_name,
             user_id=current_user.id,
             data=bracket_data  # Store the bracket data as JSON
         )

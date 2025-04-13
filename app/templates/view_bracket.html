@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>{{ bracket.name }}</h2>
+
+<p><strong>Bracket ID:</strong> {{ bracket.id }}</p>
+<p><strong>Created By:</strong> {{ bracket.user.username }}</p>
+<p><strong>Bracket Data:</strong></p>
+<pre>{{ bracket.data | tojson(indent=4) }}</pre>
+
+<a href="{{ url_for('web.view_brackets') }}">Back to Brackets</a>
+{% endblock %}

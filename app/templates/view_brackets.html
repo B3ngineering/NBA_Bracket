@@ -6,7 +6,9 @@
 {% if brackets %}
     <ul>
         {% for bracket in brackets %}
-            <li>{{ bracket.name }}</li>
+            <li>
+                <a href="{{ url_for('web.view_bracket', bracket_id=bracket.id) }}">{{ bracket.name }}</a>
+            </li>
         {% endfor %}
     </ul>
 {% else %}

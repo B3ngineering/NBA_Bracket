@@ -3,4 +3,23 @@
 {% block content %}
 <h2>Welcome to the NBA Playoff Tracker!</h2>
 <p>This is the homepage.</p>
+
+<a href="{{ url_for('web.dashboard') if current_user.is_authenticated else url_for('auth.login') }}" class="btn btn-primary">
+    Go to Dashboard
+</a>
+
+<style>
+    .btn {
+        padding: 10px 20px;
+        font-size: 16px;
+        text-decoration: none;
+        color: white;
+        background-color: #007bff;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+    }
+</style>
 {% endblock %}
