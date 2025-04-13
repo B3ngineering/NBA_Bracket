@@ -4,3 +4,5 @@ flask-login
 requests
 apscheduler
 python-dotenv
+flask-bcryptography
+nba_api

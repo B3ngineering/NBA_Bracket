@@ -1,0 +1,243 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Create a New Bracket</h2>
+
+<form id="bracketForm" method="POST" action="{{ url_for('web.create_bracket') }}">
+    <div id="bracket">
+        <!-- Eastern Conference -->
+        <div class="conference">
+            <h3>Eastern Conference</h3>
+
+            <!-- Round 1 -->
+            <div class="round" id="east_round1">
+                <h4>Round 1</h4>
+                {% for i in range(4) %}
+                <div class="matchup">
+                    <input type="text" name="team1_east_round1_{{ i+1 }}" value="{{ east_teams[i]['team_name'] }}" readonly>
+                    <input type="number" name="team1_games_east_round1_{{ i+1 }}" min="0" max="4" placeholder="Games Won" required>
+                    <span>vs</span>
+                    <input type="text" name="team2_east_round1_{{ i+1 }}" value="{{ east_teams[7-i]['team_name'] }}" readonly>
+                    <input type="number" name="team2_games_east_round1_{{ i+1 }}" min="0" max="4" placeholder="Games Won" required>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Round 2 -->
+            <div class="round" id="east_round2">
+                <h4>Round 2</h4>
+                {% for i in range(2) %}
+                <div class="matchup">
+                    <input type="text" name="team1_east_round2_{{ i+1 }}" placeholder="Winner of Matchup {{ i+1 }}" readonly>
+                    <input type="number" name="team1_games_east_round2_{{ i+1 }}" min="0" max="4" placeholder="Games Won" required>
+                    <span>vs</span>
+                    <input type="text" name="team2_east_round2_{{ 4-i }}" placeholder="Winner of Matchup {{ 4-i }}" readonly>
+                    <input type="number" name="team2_games_east_round2_{{ 4-i}}" min="0" max="4" placeholder="Games Won" required>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Round 3 -->
+            <div class="round" id="east_round3">
+                <h4>Round 3</h4>
+                <div class="matchup">
+                    <input type="text" name="team1_east_round3" placeholder="Winner of Matchup 1" readonly>
+                    <input type="number" name="team1_games_east_round3" min="0" max="4" placeholder="Games Won" required>
+                    <span>vs</span>
+                    <input type="text" name="team2_east_round3" placeholder="Winner of Matchup 2" readonly>
+                    <input type="number" name="team2_games_east_round3" min="0" max="4" placeholder="Games Won" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Western Conference -->
+        <div class="conference">
+            <h3>Western Conference</h3>
+
+            <!-- Round 1 -->
+            <div class="round" id="west_round1">
+                <h4>Round 1</h4>
+                {% for i in range(4) %}
+                <div class="matchup">
+                    <input type="text" name="team1_west_round1_{{ i+1 }}" value="{{ west_teams[i]['team_name'] }}" readonly>
+                    <input type="number" name="team1_games_west_round1_{{ i+1 }}" min="0" max="4" placeholder="Games Won" required>
+                    <span>vs</span>
+                    <input type="text" name="team2_west_round1_{{ i+1 }}" value="{{ west_teams[7-i]['team_name'] }}" readonly>
+                    <input type="number" name="team2_games_west_round1_{{ i+1 }}" min="0" max="4" placeholder="Games Won" required>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Round 2 -->
+            <div class="round" id="west_round2">
+                <h4>Round 2</h4>
+                {% for i in range(2) %}
+                <div class="matchup">
+                    <input type="text" name="team1_west_round2_{{ i+1 }}" placeholder="Winner of Matchup {{ i+1 }}" readonly>
+                    <input type="number" name="team1_games_west_round2_{{ i+1 }}" min="0" max="4" placeholder="Games Won" required>
+                    <span>vs</span>
+                    <input type="text" name="team2_west_round2_{{ i+1 }}" placeholder="Winner of Matchup {{ i+3 }}" readonly>
+                    <input type="number" name="team2_games_west_round2_{{ i+1 }}" min="0" max="4" placeholder="Games Won" required>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Round 3 -->
+            <div class="round" id="west_round3">
+                <h4>Round 3</h4>
+                <div class="matchup">
+                    <input type="text" name="team1_west_round3" placeholder="Winner of Matchup 1" readonly>
+                    <input type="number" name="team1_games_west_round3" min="0" max="4" placeholder="Games Won" required>
+                    <span>vs</span>
+                    <input type="text" name="team2_west_round3" placeholder="Winner of Matchup 2" readonly>
+                    <input type="number" name="team2_games_west_round3" min="0" max="4" placeholder="Games Won" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finals -->
+        <div class="finals">
+            <h3>NBA Finals</h3>
+            <div class="matchup">
+                <input type="text" name="team1_finals" placeholder="Eastern Conference Champion" readonly>
+                <input type="number" name="team1_games_finals" min="0" max="4" placeholder="Games Won" required>
+                <span>vs</span>
+                <input type="text" name="team2_finals" placeholder="Western Conference Champion" readonly>
+                <input type="number" name="team2_games_finals" min="0" max="4" placeholder="Games Won" required>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit">Submit Bracket</button>
+</form>
+
+<script>
+    // JavaScript to handle advancing teams based on wins in the first round
+    document.getElementById('bracketForm').addEventListener('input', function (e) {
+        const rounds = ['east_round1', 'west_round1'];
+    
+        // Process each round
+        rounds.forEach(round => {
+            const matchups = document.getElementById(round).querySelectorAll('.matchup');
+    
+            matchups.forEach((matchup, index) => {
+                const team1Games = matchup.querySelector(`input[name^="team1_games_"]`);
+                const team2Games = matchup.querySelector(`input[name^="team2_games_"]`);
+    
+                // Determine the winner based on games won
+                if (team1Games.value == 4 || team2Games.value == 4) {
+                    const nextRound = round.replace(/round(\d+)/, (_, num) => `round${parseInt(num) + 1}`);
+                    const nextRoundElement = document.getElementById(nextRound);
+                    if (nextRoundElement) {
+                        const nextMatchup = nextRoundElement.querySelectorAll('.matchup');
+    
+                        if (index === 0) {
+                            // Winner of Matchup 1 (1-8) goes to Matchup 1 in next round (vs 4-5)
+                            if (team1Games.value == 4) {
+                                nextMatchup[0].querySelector(`input[name^="team1_"]`).value = matchup.querySelector(`input[name^="team1_"]`).value;
+                            } else if (team2Games.value == 4) {
+                                nextMatchup[0].querySelector(`input[name^="team1_"]`).value = matchup.querySelector(`input[name^="team2_"]`).value;
+                            }
+                        } else if (index === 1) {
+                            // Winner of Matchup 2 (2-7) goes to Matchup 2 in next round (vs 3-6)
+                            if (team1Games.value == 4) {
+                                nextMatchup[1].querySelector(`input[name^="team1_"]`).value = matchup.querySelector(`input[name^="team1_"]`).value;
+                            } else if (team2Games.value == 4) {
+                                nextMatchup[1].querySelector(`input[name^="team1_"]`).value = matchup.querySelector(`input[name^="team2_"]`).value;
+                            }
+                        } else if (index === 2) {
+                            // Winner of Matchup 3 (3-6) goes to Matchup 2 in next round (vs 2-7)
+                            if (team1Games.value == 4) {
+                                nextMatchup[1].querySelector(`input[name^="team2_"]`).value = matchup.querySelector(`input[name^="team1_"]`).value;
+                            } else if (team2Games.value == 4) {
+                                nextMatchup[1].querySelector(`input[name^="team2_"]`).value = matchup.querySelector(`input[name^="team2_"]`).value;
+                            }
+                        } else if (index === 3) {
+                            // Winner of Matchup 4 (4-5) goes to Matchup 1 in next round (vs 1-8)
+                            if (team1Games.value == 4) {
+                                nextMatchup[0].querySelector(`input[name^="team2_"]`).value = matchup.querySelector(`input[name^="team1_"]`).value;
+                            } else if (team2Games.value == 4) {
+                                nextMatchup[0].querySelector(`input[name^="team2_"]`).value = matchup.querySelector(`input[name^="team2_"]`).value;
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    });    
+</script>
+
+<script>
+    // JavaScript to handle advancing teams based on wins in the second round and third round
+    document.getElementById('bracketForm').addEventListener('input', function (e) {
+        const rounds = ['east_round2', 'west_round2', 'east_round3', 'west_round3'];
+
+        // Process each round
+        rounds.forEach(round => {
+            const matchups = document.getElementById(round).querySelectorAll('.matchup');
+
+            matchups.forEach((matchup, index) => {
+                const team1Games = matchup.querySelector(`input[name^="team1_games_"]`);
+                const team2Games = matchup.querySelector(`input[name^="team2_games_"]`);
+                // Determine the winner based on games won
+                if (team1Games.value == 4 || team2Games.value == 4) {
+                    const nextRound = round.replace(/round(\d+)/, (_, num) => `round${parseInt(num) + 1}`);
+                    const nextRoundElement = document.getElementById(nextRound);
+                    if (nextRoundElement) {
+                        const nextMatchup = nextRoundElement.querySelectorAll('.matchup');
+
+                        if (index === 0) {
+                            // Winner of Matchup 1 goes to next round
+                            if (team1Games.value == 4) {
+                                nextMatchup[0].querySelector(`input[name^="team1_"]`).value = matchup.querySelector(`input[name^="team1_"]`).value;
+                            } else if (team2Games.value == 4) {
+                                nextMatchup[0].querySelector(`input[name^="team1_"]`).value = matchup.querySelector(`input[name^="team2_"]`).value;
+                            }
+                        } else if (index === 1) {
+                            // Winner of Matchup 2 goes to the opposite side in the next round
+                            if (team1Games.value == 4) {
+                                nextMatchup[0].querySelector(`input[name^="team2_"]`).value = matchup.querySelector(`input[name^="team1_"]`).value;
+                            } else if (team2Games.value == 4) {
+                                nextMatchup[0].querySelector(`input[name^="team2_"]`).value = matchup.querySelector(`input[name^="team2_"]`).value;
+                            }
+                        }
+                    } else if (round === 'east_round3' || round === 'west_round3') {
+                        // Handle advancing to the finals
+                        const finalsElement = document.querySelector('.finals .matchup');
+                        if (round === 'east_round3') {
+                            if (team1Games.value == 4) {
+                                finalsElement.querySelector(`input[name="team1_finals"]`).value = matchup.querySelector(`input[name^="team1_"]`).value;
+                            } else if (team2Games.value == 4) {
+                                finalsElement.querySelector(`input[name="team1_finals"]`).value = matchup.querySelector(`input[name^="team2_"]`).value;
+                            }
+                        } else if (round === 'west_round3') {
+                            if (team1Games.value == 4) {
+                                finalsElement.querySelector(`input[name="team2_finals"]`).value = matchup.querySelector(`input[name^="team1_"]`).value;
+                            } else if (team2Games.value == 4) {
+                                finalsElement.querySelector(`input[name="team2_finals"]`).value = matchup.querySelector(`input[name^="team2_"]`).value;
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    .conference, .finals {
+        margin-bottom: 30px;
+    }
+    .round {
+        margin-bottom: 20px;
+    }
+    .matchup {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .matchup input {
+        margin: 0 5px;
+    }
+</style>
+{% endblock %}

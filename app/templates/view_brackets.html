@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Your Current Brackets</h2>
+
+{% if brackets %}
+    <ul>
+        {% for bracket in brackets %}
+            <li>{{ bracket.name }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have no brackets yet. Create one now!</p>
+{% endif %}
+
+<a href="{{ url_for('web.dashboard') }}">Back to Dashboard</a>
+{% endblock %}
